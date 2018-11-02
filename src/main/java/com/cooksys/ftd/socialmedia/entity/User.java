@@ -1,31 +1,42 @@
 package com.cooksys.ftd.socialmedia.entity;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 
 @Entity
-public class User {// you can use an auto-generated id... just don't send it in the DTO
+public class User {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;// consider renaming to "userId"
+	private Long id;
 	
-	@Column(unique = true)
-	private String username;
+	@Embedded
+	private Credentials credentials;
 	
-	@JoinColumn(name="profile_fk")
-	@ManyToOne
+	@Embedded
 	private Profile profile;
 	
 	@Column
-	private Timestamp timestamp;
+	private Timestamp joined;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	private Set<User> followings;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	private Set<User> followers;
+	
+	public User() {
+		this.joined = new Timestamp(System.currentTimeMillis());
+	}
 
 	public Long getId() {
 		return id;
@@ -34,15 +45,23 @@ public class User {// you can use an auto-generated id... just don't send it in 
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public Credentials getCredentials() {
+		return credentials;
+	}
 
+	public void setCredentials(Credentials credentials) {
+		this.credentials = credentials;
+	}
+	
 	public String getUsername() {
-		return username;
+		return this.credentials.getUsername();
 	}
-
+	
 	public void setUsername(String username) {
-		this.username = username;
+		this.credentials.setUsername(username);
 	}
-
+	
 	public Profile getProfile() {
 		return profile;
 	}
@@ -51,12 +70,47 @@ public class User {// you can use an auto-generated id... just don't send it in 
 		this.profile = profile;
 	}
 
-	public Timestamp getTimestamp() {
-		return timestamp;
+	public Timestamp getJoined() {
+		return joined;
 	}
 
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
+	public Set<User> getFollowings() {
+		return followings;
+	}
+
+	public void setFollowings(Set<User> following) {
+		this.followings = following;
+	}
+	
+	public Set<User> getFollowers() {
+		return followers;
+	}
+	
+	public void setFollowers(Set<User> followers) {
+		this.followers = followers;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((credentials == null) ? 0 : credentials.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this != obj || obj == null || getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		
+		String thisName = this.credentials.getUsername();
+		String otherName = other.credentials.getUsername();
+		
+		if (thisName == null && otherName != null) {
+			return false;
+		} 
+		return !thisName.equals(otherName);
 	}
 	
 }

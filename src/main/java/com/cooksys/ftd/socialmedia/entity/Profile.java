@@ -1,43 +1,19 @@
 package com.cooksys.ftd.socialmedia.entity;
 
-import java.util.List;
+import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
-@Entity
-public class Profile {// you can use an auto-generated id... just don't send it in the DTO
+@Embeddable
+public class Profile {
 	
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-	
-	@Column
 	private String firstName;
 	
-	@Column
 	private String lastName;
 	
-	@Column(nullable = false)
+	@NotNull
 	private String email;
 	
-	@Column
-	private String phone;// consider "VARCHAR"
-	
-	@OneToMany(mappedBy="profile")
-	List<User> users;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+	private String phone;
 
 	public String getFirstName() {
 		return firstName;
@@ -69,14 +45,6 @@ public class Profile {// you can use an auto-generated id... just don't send it 
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-	}
-
-	public List<User> getUsers() {
-		return users;
-	}
-
-	public void setUsers(List<User> users) {
-		this.users = users;
 	}
 	
 }
